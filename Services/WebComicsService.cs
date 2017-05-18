@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using hwmvc.Models;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using rain_test.Services.Interfaces;
 
 namespace rain_test.Services
@@ -12,24 +14,37 @@ namespace rain_test.Services
     {
         private HttpClient httpClient;
         private IConfiguration configuration;
+        private string webComicResourceName;
+        private JsonSerializerSettings customJsonSettings;
 
         public WebComicsService(IConfiguration configuration)
         {
             httpClient = new HttpClient();
             string baseUrl = configuration.GetValue<string>("WebComicApi:baseUrl");
-            if (string.IsNullOrEmpty(baseUrl))
-                throw new InvalidOperationException("WebComicApi:baseUrl was not found on app settings");
+            webComicResourceName = configuration.GetValue<string>("WebComicApi:webComicsResourceName");
+            if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(webComicResourceName))
+                throw new InvalidOperationException("WebComicApi is not correctly definied in the app settings");
             httpClient.BaseAddress = new Uri(baseUrl);
             this.configuration = configuration;
+            var contractResolver =  new CamelCasePropertyNamesContractResolver{
+                NamingStrategy = new SnakeCaseNamingStrategy()
+            };
+            this.customJsonSettings = new JsonSerializerSettings { 
+                ContractResolver = contractResolver  
+            };
         }
+
         public async Task<XKCDComic> GetMostRecentComicAsync()
         {
-            return new XKCDComic()
-            { //In the skeleton code, we're hard-coding the comic. You'll need to fetch it. Use best practices around using controls and MVC
-                Img = "https://imgs.xkcd.com/comics/okeanos.png",
-                Title = "Okeanos",
-                //NOTE: The Alt text isn't even a part of the model yet. You'll need to add it
-            };
+            HttpResponseMessage response = await this.httpClient.GetAsync(webComicResourceName);
+            if (!response.IsSuccessStatusCode)
+            {
+                //TODO: Log the error
+                throw new HttpRequestException("Something went wrong trying to fetch the most recent comic");
+            }
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var recentComic = JsonConvert.DeserializeObject<XKCDComic>(stringResponse, customJsonSettings);
+            return recentComic;
         }
     }
 }
