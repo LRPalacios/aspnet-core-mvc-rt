@@ -1,4 +1,4 @@
-namespace rain_test.Utils
+namespace hwmvc.Utils
 {
     public class LoggingEvents
     {

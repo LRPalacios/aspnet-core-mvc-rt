@@ -2,16 +2,19 @@ using System.Threading.Tasks;
 using hwmvc.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using rain_test.Models.Enums;
-using rain_test.Services.Interfaces;
+using hwmvc.Models.Enums;
+using hwmvc.Services.Interfaces;
+using hwmvc.Utils;
 
-namespace rain_test.Controllers
+namespace hwmvc.Controllers
 {
     public abstract class BaseController : Controller
     {
         protected IWebComicsService WebComicsService;
         private const string SESSION_MAX_NUMBER_NAME = "_MaxNumber";
-        protected int MaxNumber
+        private const string SESSION_PREVIOUS_AVAILABLE_COMIC = "_PreviousAvailableComic";
+        private const string SESSION_NEXT_AVAILABLE_COMIC = "_NextAvailableComic";
+        protected int SessionMaxNumber
         {
             get
             {
@@ -34,6 +37,32 @@ namespace rain_test.Controllers
             }
         }
 
+        protected XKCDComic SessionPreviousAvailableComic
+        {
+            get
+            {
+                XKCDComic comic = HttpContext.Session.Get<XKCDComic>(SESSION_PREVIOUS_AVAILABLE_COMIC);
+                return comic;
+            }
+            set
+            {
+                 HttpContext.Session.Set<XKCDComic>(SESSION_PREVIOUS_AVAILABLE_COMIC, value);
+            }
+        }
+
+        protected XKCDComic SessionNextAvailableComic
+        {
+            get
+            {
+                XKCDComic comic = HttpContext.Session.Get<XKCDComic>(SESSION_NEXT_AVAILABLE_COMIC);
+                return comic;
+            }
+            set
+            {
+                 HttpContext.Session.Set<XKCDComic>(SESSION_NEXT_AVAILABLE_COMIC, value);
+            }
+        }
+
         public BaseController(IWebComicsService webComicsService)
         {
             WebComicsService = webComicsService;
@@ -41,18 +70,34 @@ namespace rain_test.Controllers
 
         protected async Task SetNextAvailableNumbers(XKCDComic model, bool checkForNext = true)
         {
-            model.PreviousAvailableNum = await this.WebComicsService.GetNextAvailableNum(model.Num, Direction.Backwards, this.MaxNumber);
+            XKCDComic previousAvailableComic = await this.WebComicsService.GetNextAvailableComic(model.Num, Direction.Backwards, this.SessionMaxNumber);
+            this.SessionPreviousAvailableComic = previousAvailableComic;
+            model.PreviousAvailableNum = previousAvailableComic?.Num;
+
             if (checkForNext)
             {
-                ResesSessionIfNedded(model);
-                model.NextAvailableNum = await this.WebComicsService.GetNextAvailableNum(model.Num, Direction.Forward, this.MaxNumber);
+                ResetSessionMaxNumberIfNedded(model);
+                XKCDComic nextAvailableComic = await this.WebComicsService.GetNextAvailableComic(model.Num, Direction.Forward, this.SessionMaxNumber);
+                this.SessionNextAvailableComic = nextAvailableComic;
+                model.NextAvailableNum = nextAvailableComic?.Num; 
             }
             return;
         }
 
-        private void ResesSessionIfNedded(XKCDComic model)
+        protected XKCDComic TryGetComicFromSession(int number)
         {
-            if (model.Num == this.MaxNumber)
+            if(this.SessionPreviousAvailableComic != null && this.SessionPreviousAvailableComic.Num == number)
+                return this.SessionPreviousAvailableComic;
+                
+             if(this.SessionNextAvailableComic != null && this.SessionNextAvailableComic.Num == number)
+                return this.SessionNextAvailableComic;
+
+            return null;
+        }
+
+        private void ResetSessionMaxNumberIfNedded(XKCDComic model)
+        {
+            if (model.Num == this.SessionMaxNumber)
             {
                 /* If the user is currently on /comic/MaxKnowNumberByOurSessionVariable
                     let's make sure it really is the MAX Number

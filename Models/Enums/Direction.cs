@@ -1,4 +1,4 @@
-namespace rain_test.Models.Enums
+namespace hwmvc.Models.Enums
 {
     public enum Direction
     {

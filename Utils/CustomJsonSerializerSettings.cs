@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace rain_test.Utils
+namespace hwmvc.Utils
 {
     public class CustomJsonSerializerSettings: JsonSerializerSettings
     {

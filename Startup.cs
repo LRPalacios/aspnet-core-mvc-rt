@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using rain_test.Services;
-using rain_test.Services.Interfaces;
+using hwmvc.Services;
+using hwmvc.Services.Interfaces;
 using System;
 
 namespace hwmvc
 {
     public class Startup
     {
+        private const string NOT_FOUND_PATH = "not-found";
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -61,12 +62,31 @@ namespace hwmvc
                 app.UseExceptionHandler("/Home/Error");
             }
 
+
+            // Quick an simple way to hande a custom 404
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = $"/{NOT_FOUND_PATH}";
+                    await next();
+                }
+            });
+
             app.UseStaticFiles();
             app.UseSession();
             app.UseMvc(routes =>
             {
                 /* Tbh I Prefer attribute routing but
                     since this was already defined let's use this :)*/
+
+                routes.MapRoute(
+                    name: "not_found",
+                    template: NOT_FOUND_PATH,
+                    defaults: new { controller = "Home", action = "NotFoundPage" }
+                );
+
                 routes.MapRoute(
                     name: "comic_detail",
                     template: "{controller=comic}/{id:int}",

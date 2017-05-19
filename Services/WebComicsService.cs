@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using rain_test.Models.Enums;
-using rain_test.Services.Interfaces;
-using rain_test.Utils;
+using hwmvc.Models.Enums;
+using hwmvc.Services.Interfaces;
+using hwmvc.Utils;
 
-namespace rain_test.Services
+namespace hwmvc.Services
 {
     public class WebComicsService : IWebComicsService
     {
@@ -57,7 +57,7 @@ namespace rain_test.Services
             return comic;
         }
 
-        public async Task<int?> GetNextAvailableNum(int currentNumber, Direction direction, int lastNumber)
+        public async Task<XKCDComic> GetNextAvailableComic(int currentNumber, Direction direction, int lastNumber)
         {
             if (currentNumber <= 1 && direction == Direction.Backwards)
                 return null;
@@ -68,9 +68,9 @@ namespace rain_test.Services
 
             XKCDComic comic = await this.GetComicAsync(nextPossibleNumber);
             if (comic == null)
-                return await GetNextAvailableNum(nextPossibleNumber, direction, lastNumber);
-
-            return nextPossibleNumber;
+                return await GetNextAvailableComic(nextPossibleNumber, direction, lastNumber);
+            
+            return comic;
         }
 
         private bool ConfigurationNotCorrectlyDefined(string baseUrl, string resourceName)

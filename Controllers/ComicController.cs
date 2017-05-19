@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using hwmvc.Models;
 using Microsoft.AspNetCore.Mvc;
-using rain_test.Models.Enums;
-using rain_test.Services.Interfaces;
+using hwmvc.Models.Enums;
+using hwmvc.Services.Interfaces;
 
-namespace rain_test.Controllers
+namespace hwmvc.Controllers
 {
     public class ComicController : BaseController
     {
@@ -14,7 +14,11 @@ namespace rain_test.Controllers
 
         public async Task<IActionResult> Detail(int id, [FromQuery] Direction direction = Direction.NotSet)
         {
-            XKCDComic model = await base.WebComicsService.GetComicAsync(id);
+            XKCDComic model = TryGetComicFromSession(id);
+            
+            if(model == null)
+                model = await base.WebComicsService.GetComicAsync(id);
+            
             if (model == null)
                 return NotFound();
             await base.SetNextAvailableNumbers(model);
