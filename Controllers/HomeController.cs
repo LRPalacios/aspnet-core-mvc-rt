@@ -16,8 +16,11 @@ namespace hwmvc.Controllers
         public async Task<IActionResult> Index()
         {
             XKCDComic model = await base.WebComicsService.GetMostRecentComicAsync();
+            if (model == null)
+                return NotFound();
             base.MaxNumber = model.Num;
             await base.SetNextAvailableNumbers(model, checkForNext: false);
+            ViewBag.EnterAnimationClass = "fadeIn";
             return View(model);
         }
 

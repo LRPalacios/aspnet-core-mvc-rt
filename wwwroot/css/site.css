@@ -1,8 +1,4 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
-}
-
+﻿
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -26,6 +22,28 @@ textarea {
 /* Make .svg files in the carousel display properly in older browsers */
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;
+}
+
+.comic-panel h2{
+    font-size: 21px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.comic-panel .panel-heading, .comic-panel .panel-body{
+    text-align: center
+}
+
+.comic-panel figcaption{
+    margin-top: 10px;
+}
+
+h1{
+    font-size: 28px;
+}
+
+.page-header{
+    margin: 18px 0 20px;
 }
 
 /* Hide/rearrange for smaller screens */

@@ -1,26 +1,7 @@
 @model hwmvc.Models.XKCDComic
 
-<div>
-    <h2>@Model.Title</h2>
-    <img src="@Model.Img" alt="@Model.Alt" />
-    <p>@Model.Alt</p>
-    @if (Model.PreviousAvailableNum != null)
-    {
-         <a asp-controller="Comic"
-            asp-action="Detail"
-            asp-route-id="@Model.PreviousAvailableNum"
-            >
-                Previous
-        </a>
-    }
-    @if (Model.NextAvailableNum != null)
-    {
-         <a asp-controller="Comic"
-            asp-action="Detail"
-            asp-route-id="@Model.NextAvailableNum"
-            >
-                Next
-        </a>
-    }
-   
-</div>
+@Html.Partial("_XkcdComic", Model)
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/comic.js"></script>
+}

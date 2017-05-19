@@ -1,0 +1,44 @@
+@model hwmvc.Models.XKCDComic
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary comic-panel animated @ViewBag.EnterAnimationClass">
+            <div class="panel-heading">
+                <h2>@Model.Title</h2>
+            </div>
+            <div class="panel-body">
+                <figure>
+                    <img src="@Model.Img" alt="comic img" />
+                    <figcaption><strong>@Model.Alt</strong></figcaption>
+                </figure>
+            </div>
+            <div class="panel-footer">
+                @if (Model.PreviousAvailableNum != null)
+                {
+                    <a asp-controller="Comic"
+                        asp-action="Detail"
+                        asp-route-id="@Model.PreviousAvailableNum"
+                        asp-route-direction="2"
+                        class="btn btn-success pull-left"
+                        id="btn-previous">
+                            Previous
+                    </a>
+                }
+                @if (Model.NextAvailableNum != null)
+                {
+                    <a asp-controller="Comic"
+                        asp-action="Detail"
+                        asp-route-id="@Model.NextAvailableNum"
+                        asp-route-direction="1"
+                        class="btn btn-success pull-right"
+                        id="btn-next"
+                        >
+                            Next
+                    </a>
+                }
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+    </div>
+</div>
+

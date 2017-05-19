@@ -34,8 +34,8 @@ namespace hwmvc
 
             services.AddSession(options =>
             {
-                options.CookieName = ".AdventureWorks.Session";
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.CookieName = ".hwmvc.Session";
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
             });
 
             // For configuration dependency
