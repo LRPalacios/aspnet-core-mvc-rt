@@ -10,14 +10,30 @@ namespace rain_test.Controllers
     {
         protected IWebComicsService WebComicsService;
 
+        private int _maxNumber = 0;
+        protected int MaxNumber
+        {
+            get
+            {
+                return 1838;
+            }
+            set
+            {
+                _maxNumber = value;
+            }
+        }
+
         public BaseController(IWebComicsService webComicsService)
         {
             WebComicsService = webComicsService;
         }
 
-        protected async Task SetNextAvailableNumbers(XKCDComic model)
+
+        protected async Task SetNextAvailableNumbers(XKCDComic model, bool checkForNext = true)
         {
-            model.PreviousAvailableNum = await this.WebComicsService.GetNextAvailableNum(model.Num, Direction.Backwards);
+            model.PreviousAvailableNum = await this.WebComicsService.GetNextAvailableNum(model.Num, Direction.Backwards, this.MaxNumber);
+            if (checkForNext)
+                model.NextAvailableNum = await this.WebComicsService.GetNextAvailableNum(model.Num, Direction.Forward, this.MaxNumber);
             return;
         }
     }

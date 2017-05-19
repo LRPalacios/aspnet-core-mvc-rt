@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using rain_test.Services;
 using rain_test.Services.Interfaces;
+using System;
 
 namespace hwmvc
 {
@@ -27,6 +28,15 @@ namespace hwmvc
         {
             // Add framework services.
             services.AddMvc();
+
+            // Enable session
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.CookieName = ".AdventureWorks.Session";
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+            });
 
             // For configuration dependency
             services.AddSingleton<IConfiguration>(sp => Configuration);
@@ -52,7 +62,7 @@ namespace hwmvc
             }
 
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 /* Tbh I Prefer attribute routing but
@@ -62,11 +72,11 @@ namespace hwmvc
                     template: "{controller=comic}/{id:int}",
                     defaults: new { action = "Detail" }
                 );
-                
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                
+
             });
         }
     }

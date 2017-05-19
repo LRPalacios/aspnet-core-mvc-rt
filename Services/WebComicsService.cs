@@ -64,9 +64,11 @@ namespace rain_test.Services
             return comic;
         }
 
-        public async Task<int?> GetNextAvailableNum(int currentNumber, Direction direction)
+        public async Task<int?> GetNextAvailableNum(int currentNumber, Direction direction, int lastNumber)
         {
-            if(currentNumber == 1 && direction== Direction.Backwards)
+            if(currentNumber <= 1 && direction== Direction.Backwards)
+                return null;
+            if(currentNumber >= lastNumber && direction == Direction.Forward)
                 return null;
             
             int number = (direction == Direction.Backwards)
@@ -74,9 +76,8 @@ namespace rain_test.Services
                          : currentNumber + 1;
             
             HttpResponseMessage response = await this.httpClient.GetAsync($"{number}/{webComicResourceName}");
-            if (response.StatusCode == HttpStatusCode.NotFound){
-                return await GetNextAvailableNum(number, direction);
-            }
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return await GetNextAvailableNum(number, direction, lastNumber);
             
             if (!response.IsSuccessStatusCode)
             {

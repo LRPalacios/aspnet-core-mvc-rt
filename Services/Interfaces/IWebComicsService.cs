@@ -10,6 +10,6 @@ namespace rain_test.Services.Interfaces
 
          Task<XKCDComic> GetComicAsync(int number);
 
-         Task<int?> GetNextAvailableNum(int currentNumber, Direction direction);
+         Task<int?> GetNextAvailableNum(int currentNumber, Direction direction, int lastNumber);
     }
 }
