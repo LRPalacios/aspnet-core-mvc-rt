@@ -46,5 +46,18 @@ namespace rain_test.Services
             var recentComic = JsonConvert.DeserializeObject<XKCDComic>(stringResponse, customJsonSettings);
             return recentComic;
         }
+
+        public async Task<XKCDComic> GetComicAsync(int number)
+        {
+             HttpResponseMessage response = await this.httpClient.GetAsync($"{number}/{webComicResourceName}");
+            if (!response.IsSuccessStatusCode)
+            {
+                //TODO: Log the error
+                throw new HttpRequestException($"Something went wrong trying to fetch the comic num:{number}");
+            }
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var comic = JsonConvert.DeserializeObject<XKCDComic>(stringResponse, customJsonSettings);
+            return comic;
+        }
     }
 }
