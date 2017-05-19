@@ -55,9 +55,18 @@ namespace hwmvc
 
             app.UseMvc(routes =>
             {
+                /* Tbh I Prefer attribute routing but
+                    since this was already defined let's use this :)*/
+                routes.MapRoute(
+                    name: "comic_detail",
+                    template: "{controller=comic}/{id:int}",
+                    defaults: new { action = "Detail" }
+                );
+                
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                
             });
         }
     }

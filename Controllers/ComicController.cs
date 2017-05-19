@@ -1,18 +1,21 @@
 using System.Threading.Tasks;
+using hwmvc.Models;
 using Microsoft.AspNetCore.Mvc;
+using rain_test.Services.Interfaces;
 
 namespace rain_test.Controllers
 {
-    public class ComicController: Controller
+    public class ComicController : BaseController
     {
-        public ComicController()
+        public ComicController(IWebComicsService webComicsService) : base(webComicsService)
         {
-
         }
 
-        public async Task<IActionResult> Index(int Id)
+        public async Task<IActionResult> Detail(int id)
         {
-            return View();
-        }   
+            XKCDComic model = await base.WebComicsService.GetComicAsync(id);
+            await base.SetNextAvailableNumbers(model);
+            return View(model);
+        }
     }
 }

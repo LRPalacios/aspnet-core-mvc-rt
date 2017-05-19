@@ -12,5 +12,8 @@ namespace hwmvc.Models
         public string Alt { get; set; }
         public int Num { get; set; }
 
+        public int? PreviousAvailableNum { get; set; }
+        public int? NextAvailableNum { get; set; }
+
     }
 }
