@@ -32,6 +32,7 @@ namespace hwmvc.Controllers
                 Alt = "Are you impressed yet?",
                 Img = "/images/404.jpg"
             };
+            ViewBag.EnterAnimationClass = "fadeIn";
             return View(model);
         }
 

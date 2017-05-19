@@ -37,6 +37,10 @@ namespace hwmvc.Controllers
             }
         }
 
+        /* Lot of hustle around session I know
+         but hey since I'm already launching a request to check the nexts comics
+         I might as well store them in session to get from session next time if the users
+         is navigating trough the comis. More work I know but better UX for the user */
         protected XKCDComic SessionPreviousAvailableComic
         {
             get
@@ -46,7 +50,7 @@ namespace hwmvc.Controllers
             }
             set
             {
-                 HttpContext.Session.Set<XKCDComic>(SESSION_PREVIOUS_AVAILABLE_COMIC, value);
+                HttpContext.Session.Set<XKCDComic>(SESSION_PREVIOUS_AVAILABLE_COMIC, value);
             }
         }
 
@@ -59,7 +63,7 @@ namespace hwmvc.Controllers
             }
             set
             {
-                 HttpContext.Session.Set<XKCDComic>(SESSION_NEXT_AVAILABLE_COMIC, value);
+                HttpContext.Session.Set<XKCDComic>(SESSION_NEXT_AVAILABLE_COMIC, value);
             }
         }
 
@@ -79,17 +83,17 @@ namespace hwmvc.Controllers
                 ResetSessionMaxNumberIfNedded(model);
                 XKCDComic nextAvailableComic = await this.WebComicsService.GetNextAvailableComic(model.Num, Direction.Forward, this.SessionMaxNumber);
                 this.SessionNextAvailableComic = nextAvailableComic;
-                model.NextAvailableNum = nextAvailableComic?.Num; 
+                model.NextAvailableNum = nextAvailableComic?.Num;
             }
             return;
         }
 
         protected XKCDComic TryGetComicFromSession(int number)
         {
-            if(this.SessionPreviousAvailableComic != null && this.SessionPreviousAvailableComic.Num == number)
+            if (this.SessionPreviousAvailableComic != null && this.SessionPreviousAvailableComic.Num == number)
                 return this.SessionPreviousAvailableComic;
-                
-             if(this.SessionNextAvailableComic != null && this.SessionNextAvailableComic.Num == number)
+
+            if (this.SessionNextAvailableComic != null && this.SessionNextAvailableComic.Num == number)
                 return this.SessionNextAvailableComic;
 
             return null;
